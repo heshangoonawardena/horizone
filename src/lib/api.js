@@ -15,35 +15,51 @@ export const api = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getHotels: builder.query({
-      query: () => `hotels`,
-    }),
-    getHotelById: builder.query({
-      query: (id) => `hotels/${id}`,
-    }),
     createHotel: builder.mutation({
       query: (hotel) => ({
         url: `hotels`,
         method: "POST",
         body: hotel,
       }),
-    }),
-    getBookings: builder.query({
-      query: () => `bookings/user`,
-    }),
+    }), // create hotel
     createBooking: builder.mutation({
       query: (booking) => ({
         url: `bookings`,
         method: "POST",
         body: booking,
       }),
-    }),
+    }), // create a new booking
+    getHotels: builder.query({
+      query: () => `hotels`,
+    }), // all hotels
+    getHotelById: builder.query({
+      query: (id) => `hotels/${id}`,
+    }), // hotel by id
+
+    getMyHotels: builder.query({
+      query: () => `hotels/user`,
+    }), // get own hotels
+
+    getHotelBookings: builder.query({
+      query: () => `hotels/bookings`,
+    }), // get hotels with it's bookings (hotel owner)
+
+    getBookings: builder.query({
+      query: () => `bookings/user`,
+    }), // get booking with hotel (client) => mockBookings
+
+    getBookingsWithHotels: builder.query({
+      query: () => `bookings/owner`,
+    }), // get booking with hotel (owner) => mockBookings
   }),
 });
 
 export const {
   useGetHotelsQuery,
+  useGetMyHotelsQuery,
+  useGetBookingsWithHotelsQuery,
   useGetHotelByIdQuery,
+  useGetHotelBookingsQuery,
   useGetBookingsQuery,
   useCreateHotelMutation,
   useCreateBookingMutation,

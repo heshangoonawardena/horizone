@@ -4,6 +4,7 @@ import { createHotelDTO } from "../domain/dtos/hotel";
 import NotFoundError from "../domain/errors/not-found-error";
 import ValidationError from "../domain/errors/validation-error";
 import Hotel from "../infrastructure/schemas/Hotel";
+import Booking from "../infrastructure/schemas/Booking";
 
 export const getAllHotels = async (
 	req: Request,
@@ -114,6 +115,51 @@ export const updateHotel = async (
 		});
 
 		res.status(200).send();
+		return;
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const getHotelBookings = async (
+	req: ExpressRequestWithAuth,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		// const userId = req.auth.userId;
+		const userId = "user_2tyPqEaTTN4ex0V1xV7VgRyt7yX";
+		const hotels = await Hotel.find({ ownerId: userId });
+
+		const hotelsWithBookings = await Promise.all(
+			hotels.map(async (hotel) => {
+				const bookings = await Booking.find({ hotelId: hotel._id });
+				return {
+					...hotel.toObject(),
+					bookings,
+				};
+			})
+		);
+
+		// Sort hotels by the number of bookings in descending order
+		hotelsWithBookings.sort((a, b) => b.bookings.length - a.bookings.length);
+
+		res.status(200).json(hotelsWithBookings);
+		return;
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const getHotelsByUserId = async (
+	req: ExpressRequestWithAuth,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const userId = req.auth.userId;
+		const hotels = await Hotel.find({ ownerId: userId });
+		res.status(200).json(hotels);
 		return;
 	} catch (error) {
 		next(error);

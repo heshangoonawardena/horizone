@@ -14,19 +14,49 @@ import {
 	Card,
 	CardContent,
 	CardDescription,
+	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+	Collapsible,
+	CollapsibleContent,
+	CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGetBookingsQuery } from "@/lib/api";
+import { Textarea } from "@/components/ui/textarea";
+import {
+	useGetBookingsQuery,
+	useGetBookingsWithHotelsQuery,
+	useGetMyHotelsQuery,
+} from "@/lib/api";
 import { useUser } from "@clerk/clerk-react";
 import { format } from "date-fns";
+import { Star } from "lucide-react";
+import { DollarSign } from "lucide-react";
+import { Percent } from "lucide-react";
+import { Plus } from "lucide-react";
+import { PenLine } from "lucide-react";
 import { Bed } from "lucide-react";
 import { Reply } from "lucide-react";
 import { MessageSquare } from "lucide-react";
 import { UtensilsCrossed } from "lucide-react";
-import { BedIcon } from "lucide-react";
 import { Users } from "lucide-react";
 import { Clock } from "lucide-react";
 import { CheckCircle2 } from "lucide-react";
@@ -38,127 +68,22 @@ import { useState } from "react";
 import { Link } from "react-router";
 
 const AccountPage = () => {
-	const { data: bookings, isLoading } = useGetBookingsQuery();
-	// console.log(bookings);
-	// const bookings = [
-	// 	{
-	// 		_id: "67dbc07762d33184eafbfded",
-	// 		userId: "user_2tyPqEaTTN4ex0V1xV7VgRyt7yX",
-	// 		hotelId: "67d94f60294961d17c5f8d38",
-	// 		phoneNumber: "+9411111111111",
-	// 		checkIn: "2025-03-20T07:14:54.980Z",
-	// 		checkOut: "2025-03-21T07:14:54.980Z",
-	// 		roomType: "suite",
-	// 		mealPlan: "breakfast",
-	// 		adults: 1,
-	// 		kids: 0,
-	// 		requests: "",
-	// 		totalAmount: 275,
-	// 		status: "pending",
-	// 		__v: 0,
-	// 		hotel: {
-	// 			id: "67d94f60294961d17c5f8d38",
-	// 			name: "Sea View Resort",
-	// 			location: "Miami, Florida",
-	// 			image:
-	// 				"https://images.unsplash.com/photo-1507876466758-bc54f384809c?q=80&w=1509&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-	// 			description:
-	// 				"Sea View Resort is a luxurious seaside retreat that offers guests an unforgettable experience with stunning ocean views. The resort features a variety of upscale amenities, including a spa, a fully-equipped gym, and a beautiful outdoor pool. Guests can enjoy fine dining at the on-site restaurant while overlooking the beach. The resort is perfect for a relaxing getaway, whether you're enjoying the sun, lounging by the pool, or exploring the vibrant local culture of Miami.",
-	// 		},
-	// 		ownerNote:
-	// 			"Thank you for choosing Grand Hotel! We've noted your request for a room with a view and will do our best to accommodate it. Our front desk is open 24/7 for your late check-in.",
-	// 		ownerReplies: [
-	// 			{
-	// 				id: "reply1",
-	// 				message:
-	// 					"We're pleased to confirm that we've reserved a room with an Eiffel Tower view for you. Our staff will be ready for your late check-in.",
-	// 				timestamp: new Date(2025, 4, 30, 14, 25),
-	// 			},
-	// 		],
-	// 	},
-	// 	{
-	// 		_id: "67dbceb636250012402ddf5f",
-	// 		userId: "user_2tyPqEaTTN4ex0V1xV7VgRyt7yX",
-	// 		hotelId: "67d94f93294961d17c5f8d62",
-	// 		phoneNumber: "+94764468108",
-	// 		checkIn: "2025-03-20T08:15:32.121Z",
-	// 		checkOut: "2025-03-21T08:15:32.121Z",
-	// 		roomType: "bungalow",
-	// 		mealPlan: "fullBoard",
-	// 		adults: 3,
-	// 		kids: 2,
-	// 		requests: "testing",
-	// 		totalAmount: 740,
-	// 		status: "pending",
-	// 		__v: 0,
-	// 		hotel: {
-	// 			id: "67d94f93294961d17c5f8d62",
-	// 			name: "Island Bliss Retreat",
-	// 			location: "Bali, Indonesia",
-	// 			image:
-	// 				"https://plus.unsplash.com/premium_photo-1687960116497-0dc41e1808a2?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-	// 			description:
-	// 				"Island Bliss Retreat is a tropical paradise on the beautiful island of Bali, offering a serene escape for guests seeking relaxation and rejuvenation. With its tranquil beachfront villas, lush tropical gardens, and stunning ocean views, this resort offers an idyllic setting for a romantic getaway or a peaceful retreat. The resort features a spa, an outdoor pool, and a restaurant that serves fresh local cuisine. Whether you’re enjoying a spa treatment, swimming in the crystal-clear waters, or simply soaking up the sun, Island Bliss is the ultimate place to unwind.",
-	// 		},
-	// 	},
-	// 	{
-	// 		_id: "67dbd22836250012402de046",
-	// 		userId: "user_2tyPqEaTTN4ex0V1xV7VgRyt7yX",
-	// 		hotelId: "67d94f8d294961d17c5f8d5c",
-	// 		phoneNumber: "+94764468108",
-	// 		checkIn: "2025-03-20T08:30:14.672Z",
-	// 		checkOut: "2025-03-21T08:30:14.672Z",
-	// 		roomType: "bungalow",
-	// 		mealPlan: "halfBoard",
-	// 		adults: 1,
-	// 		kids: 4,
-	// 		requests: "request",
-	// 		totalAmount: 240,
-	// 		status: "pending",
-	// 		__v: 0,
-	// 		hotel: {
-	// 			id: "67d94f8d294961d17c5f8d5c",
-	// 			name: "Jungle Paradise",
-	// 			location: "Amazon Rainforest, Brazil",
-	// 			image:
-	// 				"https://images.unsplash.com/photo-1582719388123-e03e25d06d51?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-	// 			description:
-	// 				"Jungle Paradise is a hidden gem deep in the Amazon Rainforest, offering guests the chance to experience the untamed beauty of nature. This eco-luxury resort is designed for adventure lovers and nature enthusiasts, offering unique excursions like jungle safaris, wildlife spotting, and river cruises. The accommodations are comfortable and offer a connection to the natural world around you, with private bungalows surrounded by lush greenery. Enjoy delicious local cuisine, all while immersing yourself in the awe-inspiring Amazonian ecosystem.",
-	// 		},
-	// 	},
-	// 	{
-	// 		_id: "67dbe84b51d3c0a13aebb9f8",
-	// 		userId: "user_2tyPqEaTTN4ex0V1xV7VgRyt7yX",
-	// 		hotelId: "67d94f6b294961d17c5f8d3e",
-	// 		phoneNumber: "+94764468108",
-	// 		checkIn: "2025-03-20T10:04:14.890Z",
-	// 		checkOut: "2025-03-21T10:04:14.890Z",
-	// 		roomType: "bungalow",
-	// 		mealPlan: "halfBoard",
-	// 		adults: 10,
-	// 		kids: 0,
-	// 		requests:
-	// 			"Late check-in around 10 PM. Would like a room with a view of the Eiffel Tower if possible.",
-	// 		totalAmount: 700,
-	// 		status: "pending",
-	// 		__v: 0,
-	// 		hotel: {
-	// 			id: "67d94f6b294961d17c5f8d3e",
-	// 			name: "Mountain Escape",
-	// 			location: "Aspen, Colorado",
-	// 			image:
-	// 				"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=1470",
-	// 			description:
-	// 				"Mountain Escape is an exclusive mountain retreat nestled in the heart of Aspen. Surrounded by breathtaking mountain views, the resort offers cozy cabins that provide the perfect combination of comfort and nature. Whether you’re an outdoor enthusiast seeking adventure on the slopes or someone looking for peace and serenity, this retreat offers it all. With an on-site spa, a fireplace in every room, and exceptional dining options, Mountain Escape guarantees a memorable and rejuvenating experience.",
-	// 		},
-	// 	},
-	// ];
-
+	const { data: bookings } = useGetBookingsQuery(); // client side bookings (bookings I did)
+	const { data: ownedHotels } = useGetMyHotelsQuery(); // hotels I own
+	const { data: ownedBookings } = useGetBookingsWithHotelsQuery(); // owner side bookings
 
 	const { user } = useUser();
-	// const [bookings, setBookings] = useState(null); // bookings
 	const [isDialogOpen, setIsDialogOpen] = useState(false);
 	const [selectedBookingId, setSelectedBookingId] = useState(null);
+	const [bookingStatusFilter, setBookingStatusFilter] = useState("all");
+	const [hotelFilter, setHotelFilter] = useState("all");
+	const [replyDialogOpen, setReplyDialogOpen] = useState(false);
+	const [replyMessage, setReplyMessage] = useState("");
+
+	const [approveDialogOpen, setApproveDialogOpen] = useState(false);
+	const [approveMessage, setApproveMessage] = useState("");
+	const [selectedBookingForApproval, setSelectedBookingForApproval] =
+		useState(null);
 
 	const handleCancelBooking = () => {
 		if (selectedBookingId) {
@@ -177,6 +102,66 @@ const AccountPage = () => {
 	const openCancelDialog = (id) => {
 		setSelectedBookingId(id);
 		setIsDialogOpen(true);
+	};
+
+	const handleSendReply = () => {
+		if (selectedBookingForReply && replyMessage.trim()) {
+			const newReply = {
+				id: `reply${Date.now()}`,
+				message: replyMessage,
+				timestamp: new Date(),
+			};
+
+			setBookings(
+				bookings.map((booking) =>
+					booking.id === selectedBookingForReply
+						? {
+								...booking,
+								ownerReplies: [...(booking.ownerReplies || []), newReply],
+						  }
+						: booking
+				)
+			);
+
+			setReplyDialogOpen(false);
+			setSelectedBookingForReply(null);
+			setReplyMessage("");
+		}
+	};
+	const handleApproveBooking = () => {
+		if (selectedBookingForApproval) {
+			const newReply = {
+				id: `reply${Date.now()}`,
+				message: approveMessage,
+				timestamp: new Date(),
+			};
+
+			setBookings(
+				bookings.map((booking) =>
+					booking.id === selectedBookingForApproval
+						? {
+								...booking,
+								status: "confirmed",
+								ownerReplies: [...(booking.ownerReplies || []), newReply],
+						  }
+						: booking
+				)
+			);
+
+			setApproveDialogOpen(false);
+			setSelectedBookingForApproval(null);
+			setApproveMessage("");
+		}
+	};
+
+	const openReplyDialog = (id) => {
+		setSelectedBookingForReply(id);
+		setReplyDialogOpen(true);
+	};
+
+	const openApproveDialog = (id) => {
+		setSelectedBookingForApproval(id);
+		setApproveDialogOpen(true);
 	};
 
 	const getStatusBadge = (status) => {
@@ -204,6 +189,13 @@ const AccountPage = () => {
 		}
 	};
 
+	const filteredOwnerBookings = ownedBookings?.filter((booking) => {
+		const statusMatch =
+			bookingStatusFilter === "all" || booking.status === bookingStatusFilter;
+		const hotelMatch = hotelFilter === "all" || booking.hotelId === hotelFilter;
+		return statusMatch && hotelMatch;
+	});
+
 	return (
 		<div className="container max-w-6xl px-4 py-6 mx-auto">
 			<div className="flex flex-col space-y-6">
@@ -214,7 +206,31 @@ const AccountPage = () => {
 				<Tabs defaultValue="profile" className="w-full">
 					<TabsList className="mb-4">
 						<TabsTrigger value="profile">Profile</TabsTrigger>
-						<TabsTrigger value="bookings">My Bookings</TabsTrigger>
+						<TabsTrigger value="bookings" className="flex items-center gap-2">
+							My Bookings
+							<Badge variant="secondary" className="h-5 px-2 ml-1 text-xs">
+								{bookings?.length}
+							</Badge>
+						</TabsTrigger>
+						<TabsTrigger
+							value="manage-bookings"
+							className="flex items-center gap-2"
+						>
+							Manage Bookings
+							<Badge variant="secondary" className="h-5 px-2 ml-1 text-xs">
+								{
+									ownedBookings?.filter((b) =>
+										ownedHotels.some((h) => h._id === b.hotelId)
+									).length
+								}
+							</Badge>
+						</TabsTrigger>
+						<TabsTrigger value="my-hotels" className="flex items-center gap-2">
+							My Hotels
+							<Badge variant="secondary" className="h-5 px-2 ml-1 text-xs">
+								{ownedHotels?.length}
+							</Badge>
+						</TabsTrigger>
 					</TabsList>
 
 					<TabsContent value="profile" className="space-y-4">
@@ -225,8 +241,10 @@ const AccountPage = () => {
 							</CardHeader>
 							<CardContent className="space-y-2">
 								<div className="grid grid-cols-1 gap-1">
-									<div className="font-medium">Name: Heshan Goonawardena</div>
-									<div>Email: heshangoonawardena@gmail.com</div>
+									<div className="font-medium">
+										Name: {`${user.firstName} ${user.lastName}`}
+									</div>
+									<div>Email: {user.emailAddresses[0]?.emailAddress}</div>
 								</div>
 							</CardContent>
 						</Card>
@@ -336,7 +354,7 @@ const AccountPage = () => {
 																	Special Requests
 																</div>
 																<div className="text-sm">
-																	{booking?.requests || "-"}
+																	{booking.requests || "None"}
 																</div>
 															</div>
 														</div>
@@ -349,10 +367,36 @@ const AccountPage = () => {
 																		Note from Hotel
 																	</div>
 																	<div className="text-sm">
-																		{booking?.ownerNote}
+																		{booking.ownerNote}
 																	</div>
 																</div>
 															)}
+
+															{booking?.ownerReplies &&
+																booking?.ownerReplies.length > 0 && (
+																	<div className="space-y-3">
+																		<div className="font-medium">
+																			Replies from Hotel
+																		</div>
+																		{booking.ownerReplies.map((reply) => (
+																			<div
+																				key={reply.id}
+																				className="p-3 border-l-4 rounded-md bg-primary/5 border-primary"
+																			>
+																				<div className="flex items-center mb-1 text-sm text-muted-foreground">
+																					<Reply className="w-4 h-4 mr-1" />
+																					{format(
+																						reply.timestamp,
+																						"MMM d, yyyy 'at' h:mm a"
+																					)}
+																				</div>
+																				<div className="text-sm">
+																					{reply.message}
+																				</div>
+																			</div>
+																		))}
+																	</div>
+																)}
 														</CollapsibleContent>
 
 														<div className="flex items-center justify-between pt-4 mt-4 border-t">
@@ -369,7 +413,9 @@ const AccountPage = () => {
 																	<Button
 																		variant="destructive"
 																		size="sm"
-																		onClick={() => openCancelDialog(booking._id)}
+																		onClick={() =>
+																			openCancelDialog(booking._id)
+																		}
 																	>
 																		Cancel Booking
 																	</Button>
@@ -385,9 +431,350 @@ const AccountPage = () => {
 							</CardContent>
 						</Card>
 					</TabsContent>
+
+					{/* Manage Bookings Tab (for hotel owners) */}
+					<TabsContent value="manage-bookings" className="space-y-4">
+						<Card>
+							<CardHeader>
+								<CardTitle>Manage Bookings</CardTitle>
+								<CardDescription>
+									View and respond to bookings for your hotels
+								</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<div className="flex flex-col gap-4 mb-6 md:flex-row">
+									<div className="w-full md:w-1/2">
+										<Label htmlFor="statusFilter">Filter by Status</Label>
+										<Select
+											value={bookingStatusFilter}
+											onValueChange={setBookingStatusFilter}
+										>
+											<SelectTrigger id="statusFilter">
+												<SelectValue placeholder="Select status" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="all">All Statuses</SelectItem>
+												<SelectItem value="pending">Pending</SelectItem>
+												<SelectItem value="confirmed">Confirmed</SelectItem>
+												<SelectItem value="cancelled">Cancelled</SelectItem>
+											</SelectContent>
+										</Select>
+									</div>
+									<div className="w-full md:w-1/2">
+										<Label htmlFor="hotelFilter">Filter by Hotel</Label>
+										<Select value={hotelFilter} onValueChange={setHotelFilter}>
+											<SelectTrigger id="hotelFilter">
+												<SelectValue placeholder="Select hotel" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="all">All Hotels</SelectItem>
+												{ownedHotels?.map((hotel) => (
+													<SelectItem key={hotel._id} value={hotel._id}>
+														{hotel.name}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+									</div>
+								</div>
+
+								<div className="space-y-4">
+									{filteredOwnerBookings?.length === 0 ? (
+										<div className="py-6 text-center text-muted-foreground">
+											No bookings match your current filters.
+										</div>
+									) : (
+										filteredOwnerBookings?.map((booking) => (
+											<Collapsible
+												key={booking._id}
+												className="overflow-hidden border rounded-lg"
+											>
+												<div className="flex flex-col md:flex-row">
+													<div className="md:w-1/4">
+														<img
+															src={booking.hotel.image || "/placeholder.svg"}
+															alt={booking.hotel.name}
+															className="object-cover w-full h-full"
+														/>
+													</div>
+													<div className="flex flex-col p-4 md:w-3/4">
+														<div className="flex flex-col gap-2 md:flex-row md:justify-between md:items-start">
+															<div>
+																<h3 className="text-lg font-bold">
+																	{booking.hotel.name}
+																</h3>
+																<div className="flex items-center text-sm text-muted-foreground">
+																	<MapPin className="w-4 h-4 mr-1" />
+																	{booking.hotel.location}
+																</div>
+															</div>
+															<div>{getStatusBadge(booking.status)}</div>
+														</div>
+
+														<div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
+															<div>
+																<div className="text-sm text-muted-foreground">
+																	Guest
+																</div>
+																<div className="font-medium">
+																	{booking.user.Name}
+																</div>
+																<div className="text-sm">
+																	{booking.user.Email}
+																</div>
+															</div>
+
+															<div>
+																<div className="text-sm text-muted-foreground">
+																	Dates
+																</div>
+																<div className="flex items-center">
+																	<CalendarIcon className="w-4 h-4 mr-1" />
+																	<span>
+																		{format(booking.checkIn, "MMM d")} -{" "}
+																		{format(booking.checkOut, "MMM d, yyyy")}
+																	</span>
+																</div>
+															</div>
+														</div>
+
+														<div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
+															<div>
+																<div className="text-sm text-muted-foreground">
+																	Room
+																</div>
+																<div className="flex items-center">
+																	<Hotel className="w-4 h-4 mr-1" />
+																	<span>{booking.roomType}</span>
+																</div>
+															</div>
+
+															<div>
+																<div className="text-sm text-muted-foreground">
+																	Meal Plan
+																</div>
+																<div className="flex items-center">
+																	<UtensilsCrossed className="w-4 h-4 mr-1" />
+																	<span>{booking.mealPlan}</span>
+																</div>
+															</div>
+
+															<div>
+																<div className="text-sm text-muted-foreground">
+																	Guests
+																</div>
+																<div className="flex items-center">
+																	<Users className="w-4 h-4 mr-1" />
+																	<span>
+																		{booking.adults}{" "}
+																		{booking.adults === 1 ? "Adult" : "Adults"}
+																		{booking.kids > 0 &&
+																			`, ${booking.kids} ${
+																				booking.kids === 1
+																					? "Child"
+																					: "Children"
+																			}`}
+																	</span>
+																</div>
+															</div>
+														</div>
+
+														<div className="mt-4">
+															<div className="text-sm text-muted-foreground">
+																Special Requests
+															</div>
+															<div className="p-2 mt-1 text-sm border rounded-md">
+																{booking?.requests || "None"}
+															</div>
+														</div>
+
+														<CollapsibleContent className="pt-4 mt-4 space-y-4 border-t">
+															{booking?.ownerNote && (
+																<div className="p-3 rounded-md bg-muted">
+																	<div className="flex items-center mb-1 font-medium">
+																		<MessageSquare className="w-4 h-4 mr-1" />
+																		Your Note
+																	</div>
+																	<div className="text-sm">
+																		{booking?.ownerNote}
+																	</div>
+																</div>
+															)}
+
+															{booking?.ownerReplies &&
+																booking?.ownerReplies.length > 0 && (
+																	<div className="space-y-3">
+																		<div className="font-medium">
+																			Your Replies
+																		</div>
+																		{booking.ownerReplies.map((reply) => (
+																			<div
+																				key={reply.id}
+																				className="p-3 border-l-4 rounded-md bg-primary/5 border-primary"
+																			>
+																				<div className="flex items-center mb-1 text-sm text-muted-foreground">
+																					<Reply className="w-4 h-4 mr-1" />
+																					{format(
+																						reply.timestamp,
+																						"MMM d, yyyy 'at' h:mm a"
+																					)}
+																				</div>
+																				<div className="text-sm">
+																					{reply.message}
+																				</div>
+																			</div>
+																		))}
+																	</div>
+																)}
+														</CollapsibleContent>
+
+														<div className="flex items-center justify-between pt-4 mt-4 border-t">
+															<div className="font-semibold">
+																${booking.totalAmount.toFixed(2)}
+															</div>
+															<div className="flex items-center gap-2">
+																<CollapsibleTrigger asChild>
+																	<Button variant="outline" size="sm">
+																		View Details
+																	</Button>
+																</CollapsibleTrigger>
+
+																<Button
+																	variant="outline"
+																	size="sm"
+																	onClick={() => openReplyDialog(booking.id)}
+																>
+																	Send Reply
+																</Button>
+
+																{booking.status === "pending" && (
+																	<Button
+																		variant="default"
+																		size="sm"
+																		onClick={() =>
+																			openApproveDialog(booking.id)
+																		}
+																	>
+																		Approve
+																	</Button>
+																)}
+
+																{booking.status !== "cancelled" && (
+																	<Button
+																		variant="destructive"
+																		size="sm"
+																		onClick={() => openCancelDialog(booking.id)}
+																	>
+																		Cancel
+																	</Button>
+																)}
+															</div>
+														</div>
+													</div>
+												</div>
+											</Collapsible>
+										))
+									)}
+								</div>
+							</CardContent>
+						</Card>
+					</TabsContent>
+
+					{/* My Hotels Tab (for hotel owners) */}
+					<TabsContent value="my-hotels" className="space-y-4">
+						<Card>
+							<CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+								<div>
+									<CardTitle>My Hotels</CardTitle>
+									<CardDescription>Manage your properties</CardDescription>
+								</div>
+								<Button>
+									<Plus className="w-4 h-4 mr-2" /> Add New Hotel
+								</Button>
+							</CardHeader>
+							<CardContent>
+								<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+									{ownedHotels?.map((hotel) => (
+										<Card key={hotel._id} className="overflow-hidden">
+											<div className="w-full overflow-hidden aspect-video">
+												<img
+													src={hotel.image || "/placeholder.svg"}
+													alt={hotel.name}
+													className="object-cover w-full h-full"
+												/>
+											</div>
+											<CardHeader>
+												<CardTitle>{hotel.name}</CardTitle>
+												<CardDescription>
+													<div className="flex items-center">
+														<MapPin className="w-4 h-4 mr-1" />
+														{hotel.location}
+													</div>
+												</CardDescription>
+											</CardHeader>
+											<CardContent>
+												<div className="grid grid-cols-2 gap-4">
+													<div className="space-y-1">
+														<div className="text-sm text-muted-foreground">
+															Rating
+														</div>
+														<div className="flex items-center">
+															<Star className="w-4 h-4 mr-1 text-yellow-400 fill-yellow-400" />
+															<span>{hotel?.rating || 0}/5</span>
+														</div>
+													</div>
+													<div className="space-y-1">
+														<div className="text-sm text-muted-foreground">
+															Rooms
+														</div>
+														<div className="flex items-center">
+															<Hotel className="w-4 h-4 mr-1" />
+															<span>{hotel?.rooms || 0}</span>
+														</div>
+													</div>
+													<div className="space-y-1">
+														<div className="text-sm text-muted-foreground">
+															Occupancy
+														</div>
+														<div className="flex items-center">
+															<Percent className="w-4 h-4 mr-1" />
+															<span>{hotel?.occupancyRate || 0}%</span>
+														</div>
+													</div>
+													<div className="space-y-1">
+														<div className="text-sm text-muted-foreground">
+															Revenue
+														</div>
+														<div className="flex items-center">
+															<DollarSign className="w-4 h-4 mr-1" />
+															<span>${hotel?.revenue?.toLocaleString() || 0}</span>
+														</div>
+													</div>
+												</div>
+											</CardContent>
+											<CardFooter className="flex justify-between">
+												<div className="text-sm">
+													<Badge variant="outline" className="mr-2">
+														{hotel?.pendingBookings} pending
+													</Badge>
+													<Badge variant="outline">
+														{hotel?.confirmedBookings} confirmed
+													</Badge>
+												</div>
+												<Button variant="outline" size="sm">
+													<PenLine className="w-4 h-4 mr-2" /> Edit
+												</Button>
+											</CardFooter>
+										</Card>
+									))}
+								</div>
+							</CardContent>
+						</Card>
+					</TabsContent>
 				</Tabs>
 			</div>
 
+			{/* Cancel Booking Dialog */}
 			<AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 				<AlertDialogContent>
 					<AlertDialogHeader>
@@ -408,6 +795,70 @@ const AccountPage = () => {
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
+
+			{/* Reply Dialog */}
+			<Dialog open={replyDialogOpen} onOpenChange={setReplyDialogOpen}>
+				<DialogContent className="sm:max-w-md">
+					<DialogHeader>
+						<DialogTitle>Send Reply to Guest</DialogTitle>
+						<DialogDescription>
+							Your message will be sent to the guest and added to the booking
+							conversation.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="py-4 space-y-4">
+						<div className="space-y-2">
+							<Label htmlFor="reply">Your Message</Label>
+							<Textarea
+								id="reply"
+								placeholder="Type your reply here..."
+								value={replyMessage}
+								onChange={(e) => setReplyMessage(e.target.value)}
+								className="min-h-[100px]"
+							/>
+						</div>
+					</div>
+					<DialogFooter>
+						<Button variant="outline" onClick={() => setReplyDialogOpen(false)}>
+							Cancel
+						</Button>
+						<Button onClick={handleSendReply}>Send Reply</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Approve Booking Dialog */}
+			<Dialog open={approveDialogOpen} onOpenChange={setApproveDialogOpen}>
+				<DialogContent className="sm:max-w-md">
+					<DialogHeader>
+						<DialogTitle>Approve Booking</DialogTitle>
+						<DialogDescription>
+							Add a confirmation message for the guest.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="py-4 space-y-4">
+						<div className="space-y-2">
+							<Label htmlFor="approveMessage">Confirmation Message</Label>
+							<Textarea
+								id="approveMessage"
+								placeholder="Thank you for your booking. We're looking forward to welcoming you..."
+								value={approveMessage}
+								onChange={(e) => setApproveMessage(e.target.value)}
+								className="min-h-[100px]"
+							/>
+						</div>
+					</div>
+					<DialogFooter>
+						<Button
+							variant="outline"
+							onClick={() => setApproveDialogOpen(false)}
+						>
+							Cancel
+						</Button>
+						<Button onClick={handleApproveBooking}>Approve Booking</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 };

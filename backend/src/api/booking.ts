@@ -4,8 +4,9 @@ import {
 	deleteBooking,
 	getAllBookings,
 	getAllBookingsForHotelId,
+	getAllBookingsForUserId,
 	getBookingById,
-	getAllBookingsForUserId, // Add this import
+	getBookingsForOwnerId,
 } from "../application/booking";
 import { isAuthenticated } from "./middlewares/authentication-middleware";
 
@@ -16,7 +17,9 @@ bookingRouter
 	.post(isAuthenticated, createBooking)
 	.get(getAllBookings);
 
-bookingRouter.route("/user").get(isAuthenticated, getAllBookingsForUserId);
+bookingRouter.route("/user").get(getAllBookingsForUserId);
+
+bookingRouter.route("/owner").get(getBookingsForOwnerId);
 
 bookingRouter.route("/:id").get(getBookingById).delete(deleteBooking);
 

@@ -4,7 +4,6 @@ import { createBookingDTO } from "../domain/dtos/booking";
 import NotFoundError from "../domain/errors/not-found-error";
 import ValidationError from "../domain/errors/validation-error";
 import Booking from "../infrastructure/schemas/Booking";
-import { log } from "console";
 import Hotel from "../infrastructure/schemas/Hotel";
 
 export const createBooking = async (
@@ -51,7 +50,22 @@ export const getAllBookings = async (
 ) => {
 	try {
 		const bookings = await Booking.find({});
-		res.status(200).json(bookings);
+		const bookingsWithHotelDetails = await Promise.all(
+			bookings.map(async (booking) => {
+				const hotel = await Hotel.findById(booking.hotelId);
+				return {
+					...booking.toObject(),
+					hotel: {
+						id: hotel?._id,
+						name: hotel?.name,
+						location: hotel?.location,
+						image: hotel?.image,
+						description: hotel?.description,
+					},
+				};
+			})
+		);
+		res.status(200).json(bookingsWithHotelDetails);
 		return;
 	} catch (error) {
 		next(error);
@@ -77,7 +91,6 @@ export const getBookingById = async (
 		next(error);
 	}
 };
-
 
 export const getAllBookingsForHotelId = async (
 	req: Request,
@@ -125,6 +138,7 @@ export const getAllBookingsForUserId = async (
 ) => {
 	try {
 		const userId = req.auth.userId;
+		// const userId = "user_2tyPqEaTTN4ex0V1xV7VgRyt7yX";
 		const bookings = await Booking.find({ userId });
 		const bookingsWithHotelDetails = await Promise.all(
 			bookings.map(async (booking) => {
@@ -164,6 +178,52 @@ export const deleteBooking = async (
 		await Booking.findByIdAndDelete(bookingId);
 
 		res.status(200).send();
+		return;
+	} catch (error) {
+		next(error);
+	}
+};
+
+export const getBookingsForOwnerId = async (
+	req: ExpressRequestWithAuth,
+	res: Response,
+	next: NextFunction
+) => {
+	try {
+		const ownerId = req.auth.userId;
+		const hotels = await Hotel.find({ ownerId });
+
+		const bookingsWithHotelDetails = await Promise.all(
+			hotels.map(async (hotel) => {
+				const bookings = await Booking.find({ hotelId: hotel._id });
+				return Promise.all(
+					bookings.map(async (booking) => {
+						const user = await clerkClient?.users.getUser(booking.userId);
+						return {
+							...booking.toObject(),
+							hotel: {
+								id: hotel._id,
+								name: hotel.name,
+								location: hotel.location,
+								image: hotel.image,
+								description: hotel.description,
+							},
+							user: {
+								id: user.id,
+								firstName: user.firstName,
+								lastName: user.lastName,
+								email: user.emailAddresses[0]?.emailAddress,
+							},
+						};
+					})
+				);
+			})
+		);
+
+		// Flatten the array of arrays
+		const flattenedBookings = bookingsWithHotelDetails.flat();
+
+		res.status(200).json(flattenedBookings);
 		return;
 	} catch (error) {
 		next(error);
